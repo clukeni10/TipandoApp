@@ -1,7 +1,5 @@
-interface User{
-    id: number,
-    nome: string,
-    dataNascimento: string,
-    imagem: string
+export interface Registro {
+    register(nome: string,data: string, imagem: string):void;
 
+   
 }

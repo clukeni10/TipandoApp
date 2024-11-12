@@ -1,3 +1,6 @@
+import { Registro } from "./DAO";
+import { RegistroService } from "./Repository";
+
 function replaceIconWithImage(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files ? target.files[0] : null;
@@ -21,47 +24,41 @@ function replaceIconWithImage(event: Event): void {
   const save = document.getElementById('botao') as HTMLButtonElement;
   
   if (save) {
-    save.addEventListener('click', () => {
-        // Captura os valores dos campos
-        const nome = (document.getElementById('nome') as HTMLInputElement).value;
-        const data = (document.getElementById('data') as HTMLInputElement).value;
-        const imageInput = document.getElementById('imageInput') as HTMLInputElement;
-      
-        // Verifica se os campos obrigatórios estão preenchidos
-        if (!nome || !data) {
-          alert('Por favor, preencha todos os campos!');
-          return;
-        }
-      
-        // Salva os dados no localStorage
-        const file = imageInput.files ? imageInput.files[0] : null;
-        if (!file) {
-          alert('Por favor, selecione uma imagem!');
-          return;
-        }
-      
-        const reader = new FileReader();
-        reader.onload = function (e: ProgressEvent<FileReader>): void {
-          // Cria um objeto com nome, data e imagem
-          const novoRegistro = {
-            nome,
-            data,
-            imagem: e.target?.result as string, // A imagem será convertida para string (Base64)
-          };
-      
-          // Recupera os dados existentes no localStorage ou cria um array vazio
-          let registros: { nome: string, data: string, imagem: string }[] = JSON.parse(localStorage.getItem('registros') || '[]');
-          
-          // Adiciona o novo registro ao array
-          registros.push(novoRegistro);
-          
-          // Salva o array de registros no localStorage
-          localStorage.setItem('registros', JSON.stringify(registros));
-      
-          // Exibe mensagem de sucesso após salvar todos os dados
-          console.log('Dados salvos com sucesso!');
-        };
-        reader.readAsDataURL(file);
-      });
-      
+   save.addEventListener('click', () => {
+  // Captura os valores dos campos
+  const nome = (document.getElementById('nome') as HTMLInputElement).value;
+  const data = (document.getElementById('data') as HTMLInputElement).value;
+  const imageInput = document.getElementById('imageInput') as HTMLInputElement;
+
+  // Verifica se os campos obrigatórios estão preenchidos
+  if (!nome || !data) {
+    alert('Por favor, preencha todos os campos!');
+    return;
+  }
+
+  // Salva os dados no localStorage
+  const file = imageInput.files ? imageInput.files[0] : null;
+  if (!file) {
+    alert('Por favor, selecione uma imagem!');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function (e: ProgressEvent<FileReader>): void {
+    // Cria uma instância do serviço RegistroService
+    const registroService = new RegistroService();
+
+    // Chama o método de salvar, passando os dados
+    if (typeof e.target?.result === 'string') {
+      const imagem = e.target.result; // Imagem em base64
+      registroService.register(nome, data, imagem);
+
+      // Exibe mensagem de sucesso após salvar os dados
+      console.log('Dados salvos com sucesso!');
     }
+  };
+
+  reader.readAsDataURL(file); // Lê o arquivo de imagem como uma URL base64
+});
+} else {
+console.error("Elemento 'botao' não encontrado!");
+}

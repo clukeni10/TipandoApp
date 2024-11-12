@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Repository_1 = require("./Repository");
 function replaceIconWithImage(event) {
     const target = event.target;
     const file = target.files ? target.files[0] : null;
@@ -36,21 +38,19 @@ if (save) {
         }
         const reader = new FileReader();
         reader.onload = function (e) {
-            // Cria um objeto com nome, data e imagem
-            const novoRegistro = {
-                nome,
-                data,
-                imagem: e.target?.result, // A imagem será convertida para string (Base64)
-            };
-            // Recupera os dados existentes no localStorage ou cria um array vazio
-            let registros = JSON.parse(localStorage.getItem('registros') || '[]');
-            // Adiciona o novo registro ao array
-            registros.push(novoRegistro);
-            // Salva o array de registros no localStorage
-            localStorage.setItem('registros', JSON.stringify(registros));
-            // Exibe mensagem de sucesso após salvar todos os dados
-            console.log('Dados salvos com sucesso!');
+            // Cria uma instância do serviço RegistroService
+            const registroService = new Repository_1.RegistroService();
+            // Chama o método de salvar, passando os dados
+            if (typeof e.target?.result === 'string') {
+                const imagem = e.target.result; // Imagem em base64
+                registroService.register(nome, data, imagem);
+                // Exibe mensagem de sucesso após salvar os dados
+                console.log('Dados salvos com sucesso!');
+            }
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file); // Lê o arquivo de imagem como uma URL base64
     });
+}
+else {
+    console.error("Elemento 'botao' não encontrado!");
 }
