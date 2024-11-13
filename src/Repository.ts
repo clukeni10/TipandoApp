@@ -1,18 +1,14 @@
-import { Registro } from "./DAO";
+import { replaceIconWithImage } from './ReplaceIcon.ts';
 
-export class RegistroService implements Registro{
-    register(nome: string,data: string, imagem: string):void{
+document.addEventListener('DOMContentLoaded', () => {
+  const fileInput = document.getElementById('imageInput') as HTMLInputElement;
 
-        let registro = JSON.parse(localStorage.getItem('registros') || '[]');
+  if (fileInput) {
+    // Adiciona o ouvinte de eventos 'change' programaticamente
+    fileInput.addEventListener('change', (event) => {
+      replaceIconWithImage(event); // Chama a função passando o evento
+    });
+  }
+});
 
-        const novoRegistro = { nome, data, imagem };
 
-        registro.push(novoRegistro);
-
-        // Salva de volta no localStorage
-        localStorage.setItem('registros', JSON.stringify(registro));
-
-        console.log('Dados salvos com sucesso!');
-    }
-
-}
